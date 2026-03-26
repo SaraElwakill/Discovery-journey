@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -534,5 +534,584 @@
     // تشغيل التطبيق عند التحميل
     initApp();
 </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captain Anas: Command Center</title>
+    <!-- Military & High-Tech Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --army-green: #3b593f;
+            --army-light: #557a55;
+            --army-dark: #1e2b1f;
+            --police-blue: #1b2e4b;
+            --police-light: #2c4a7c;
+            --gold: #f1c40f;
+            --gold-dark: #f39c12;
+            --danger: #c0392b;
+            --danger-light: #e74c3c;
+            --success: #27ae60;
+            --text-light: #ecf0f1;
+            --panel-bg: #2d3436;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #021a04;
+            /* Radar / Tactical Grid Background */
+            background-image: 
+                linear-gradient(rgba(46, 204, 113, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(46, 204, 113, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-light);
+            overflow-x: hidden;
+            padding: 15px;
+            position: relative;
+        }
+
+        /* Radar Sweep Animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%; left: 50%;
+            width: 200vw; height: 200vw;
+            margin-top: -100vw; margin-left: -100vw;
+            background: conic-gradient(from 0deg, transparent 70%, rgba(46, 204, 113, 0.2) 100%);
+            animation: sweep 4s linear infinite;
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        @keyframes sweep { 100% { transform: rotate(360deg); } }
+
+        h1, h2, h3, .tactical-font { font-family: 'Black Ops One', cursive; letter-spacing: 2px; }
+
+        /* --- APP CONTAINER --- */
+        .app-container {
+            background: rgba(30, 43, 31, 0.85);
+            border-radius: 15px;
+            width: 100%;
+            max-width: 900px;
+            height: 90vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(46, 204, 113, 0.2);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            border: 4px solid var(--army-light);
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        /* --- TOP NAVIGATION BAR --- */
+        .navbar {
+            background: var(--police-blue);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--gold);
+        }
+        .nav-title { color: var(--gold); font-size: 1.8rem; text-shadow: 2px 2px 0 #000; display: flex; align-items: center; gap: 10px; }
+        .btn-home {
+            background: var(--panel-bg); color: var(--gold); border: 2px solid var(--gold);
+            padding: 8px 20px; font-size: 1.1rem; font-weight: 900; border-radius: 5px;
+            cursor: pointer; transition: 0.2s; box-shadow: 0 4px 0 var(--gold-dark);
+            text-transform: uppercase;
+        }
+        .btn-home:active { transform: translateY(4px); box-shadow: 0 0 0 var(--gold-dark); }
+
+        /* --- SCREENS --- */
+        .screen { flex: 1; padding: 25px; overflow-y: auto; display: none; animation: flashIn 0.3s ease; }
+        .screen.active { display: block; }
+        @keyframes flashIn { from { opacity: 0; filter: brightness(2); } to { opacity: 1; filter: brightness(1); } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--army-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--army-light); border-radius: 5px; }
+
+        /* --- MAIN MENU --- */
+        .menu-grid { display: flex; flex-direction: column; gap: 20px; align-items: center; justify-content: center; height: 100%; }
+        .menu-title { font-size: 2.8rem; color: var(--gold); text-shadow: 3px 3px 0 #000, 0 0 15px rgba(241, 196, 15, 0.5); margin-bottom: 20px; text-align: center; }
+        
+        .menu-btn {
+            width: 100%; max-width: 450px; padding: 20px; border-radius: 8px; border: 3px solid #fff;
+            font-size: 1.5rem; font-family: 'Black Ops One', cursive; color: #fff; cursor: pointer;
+            transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 15px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .menu-btn:active { transform: translateY(8px); }
+        
+        /* Military Button Styles */
+        .btn-c1 { background: var(--police-light); box-shadow: 0 8px 0 var(--police-blue); border-color: #74b9ff; }
+        .btn-c3 { background: var(--army-light); box-shadow: 0 8px 0 var(--army-green); border-color: var(--gold); }
+        .btn-c2 { background: var(--danger-light); box-shadow: 0 8px 0 var(--danger); border-color: #ff9ff3; }
+
+        /* --- CURRICULUM (TACTICAL MAP) --- */
+        .contents-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(0,0,0,0.5); padding: 15px 25px; border-radius: 10px; border: 2px solid var(--gold); }
+        .contents-header h2 { color: var(--gold); font-size: 1.8rem; }
+        
+        .theme-section { background: rgba(255,255,255,0.05); border: 2px solid var(--army-light); border-radius: 10px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .theme-header { background: var(--army-green); color: var(--gold); padding: 15px 20px; font-size: 1.5rem; text-shadow: 2px 2px 0 #000; border-bottom: 2px solid var(--gold); text-transform: uppercase; }
+        
+        .chapter-box { padding: 15px 20px; border-bottom: 1px dashed var(--army-light); }
+        .chapter-box:last-child { border-bottom: none; }
+        .chapter-box h3 { color: #fff; font-size: 1.3rem; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; font-family: 'Black Ops One', cursive;}
+        
+        .lesson-list { list-style: none; padding-left: 10px; }
+        .lesson-list li { font-size: 1.1rem; font-weight: 700; color: #bdc3c7; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; font-family: 'Nunito', sans-serif;}
+        .lesson-list li::before { content: '►'; font-size: 0.9rem; color: var(--gold); }
+
+        .btn-read-aloud { background: var(--police-light); color: #fff; border: 2px solid var(--police-blue); padding: 10px 20px; font-size: 1.1rem; font-family: 'Black Ops One', cursive; border-radius: 8px; cursor: pointer; box-shadow: 0 5px 0 var(--police-blue); display: flex; align-items: center; gap: 8px; transition: 0.1s; }
+        .btn-read-aloud:active { transform: translateY(5px); box-shadow: 0 0 0 var(--police-blue); }
+        .btn-stop { background: var(--danger-light); border-color: var(--danger); box-shadow: 0 5px 0 var(--danger); display: none; }
+
+        /* --- MEDAL GALLERY --- */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 20px; padding: 20px 0; }
+        .gallery-slot { background: rgba(0,0,0,0.6); border: 3px dashed var(--army-light); border-radius: 10px; height: 160px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: 0.3s; position: relative; }
+        .gallery-slot.unlocked { background: linear-gradient(135deg, rgba(241,196,15,0.2) 0%, rgba(0,0,0,0.6) 100%); border: 3px solid var(--gold); box-shadow: 0 0 20px rgba(241, 196, 15, 0.3); animation: bounceIn 0.6s ease; }
+        
+        @keyframes bounceIn { 0% { transform: scale(0.5); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        
+        .gallery-slot .emoji { font-size: 3.5rem; filter: grayscale(100%) opacity(0.2); transition: 0.3s; }
+        .gallery-slot.unlocked .emoji { filter: none; transform: scale(1.2); margin-bottom: 10px;}
+        .gallery-slot .lock { position: absolute; font-size: 2rem; color: #7f8fa6; }
+        .gallery-slot.unlocked .lock { display: none; }
+        .gallery-slot .title { font-weight: 900; font-family: 'Black Ops One', cursive; color: var(--gold); font-size: 1rem; display: none; text-shadow: 1px 1px 0 #000;}
+        .gallery-slot.unlocked .title { display: block; }
+
+        /* --- GAME SCREEN --- */
+        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px solid var(--army-light);}
+        .progress-bar-container { flex: 1; height: 25px; background: #111; border-radius: 5px; margin: 0 20px; border: 2px solid var(--gold); overflow: hidden; position: relative;}
+        .progress-bar-fill { height: 100%; background: repeating-linear-gradient(45deg, var(--success), var(--success) 10px, var(--army-green) 10px, var(--army-green) 20px); width: 0%; transition: width 0.5s; box-shadow: 0 0 10px var(--success);}
+        
+        .question-box { font-size: 1.5rem; font-family: 'Nunito', sans-serif; font-weight: 900; color: #fff; margin-bottom: 30px; padding: 25px; background: rgba(44, 62, 80, 0.9); border-radius: 10px; border: 3px solid var(--gold); box-shadow: 0 6px 0 var(--gold-dark); line-height: 1.5; text-align: center; }
+        
+        .options-container { display: flex; flex-direction: column; gap: 15px; }
+        .option-btn { background: var(--panel-bg); color: #fff; border: 3px solid var(--police-light); padding: 15px 25px; font-size: 1.3rem; font-family: 'Nunito', sans-serif; font-weight: 900; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 6px 0 var(--police-blue); transition: 0.1s; }
+        .option-btn:hover { background: var(--police-light); transform: translateY(-2px); }
+        .option-btn:active { transform: translateY(6px); box-shadow: 0 0 0 var(--police-blue); }
+
+        .feedback-area { margin-top: 20px; font-size: 1.6rem; font-family: 'Black Ops One', cursive; text-transform: uppercase; min-height: 45px; opacity: 0; transition: opacity 0.3s; text-align: center; }
+        .feedback-area.show { opacity: 1; }
+        .text-correct { color: var(--success); text-shadow: 2px 2px 0 #000; }
+        .text-wrong { color: var(--danger-light); text-shadow: 2px 2px 0 #000; }
+
+        .anim-shake { animation: shake 0.4s; background: var(--danger) !important; color: white !important; border-color: var(--danger-dark) !important; box-shadow: 0 6px 0 var(--danger-dark) !important; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        .anim-correct { animation: bounce 0.5s; background: var(--success) !important; color: white !important; border-color: var(--army-green) !important; box-shadow: 0 6px 0 var(--army-green) !important; }
+        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05) translateY(-5px); } }
+
+        /* Stars Canvas */
+        #confetti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
+
+        @media (max-width: 600px) {
+            .nav-title { font-size: 1.3rem; }
+            .menu-title { font-size: 2rem; }
+            .menu-btn { font-size: 1.2rem; padding: 15px; }
+            .contents-header h2 { font-size: 1.3rem; }
+            .question-box { font-size: 1.2rem; padding: 15px; }
+            .option-btn { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- NAVBAR -->
+        <div class="navbar">
+            <div class="nav-title tactical-font">👮‍♂️ CAPTAIN ANAS</div>
+            <button class="btn-home tactical-font" onclick="nav('menu')">HQ BASE</button>
+        </div>
+
+        <canvas id="confetti-canvas"></canvas>
+
+        <!-- 1. MAIN MENU SCREEN -->
+        <div id="screen-menu" class="screen active">
+            <div class="menu-grid">
+                <h1 class="menu-title">COMMAND CENTER 🚨</h1>
+                <p style="font-size: 1.2rem; color: #bdc3c7; font-weight: bold; text-align: center; margin-bottom: 10px;">Select your orders, Captain!</p>
+                
+                <button class="menu-btn btn-c1" onclick="nav('contents')">
+                    🗺️ Tactical Map (Intel)
+                </button>
+                
+                <button class="menu-btn btn-c3" onclick="nav('gallery')">
+                    🎖️ Medals & Honors
+                </button>
+
+                <button class="menu-btn btn-c2" onclick="startGame()">
+                    🚁 Deploy Mission!
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. CURRICULUM CONTENTS (TACTICAL MAP) -->
+        <div id="screen-contents" class="screen">
+            <div class="contents-header">
+                <h2 class="tactical-font">🗺️ Mission Objectives (Term 2)</h2>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-read-aloud btn-stop" id="btn-stop-audio" onclick="stopAudio()">⏹ ABORT</button>
+                    <button class="btn-read-aloud" onclick="readAllContents()">📻 RADIO INTEL</button>
+                </div>
+            </div>
+
+            <div id="content-text-area">
+                <!-- THEME 3 -->
+                <div class="theme-section">
+                    <div class="theme-header">🌍 OPERATION: Origins (Theme 3)</div>
+                    
+                    <div class="chapter-box">
+                        <h3>🐾 File 1: Animal Secrets</h3>
+                        <ul class="lesson-list">
+                            <li>Target 1: Inherited Traits (Parents & Offspring)</li>
+                            <li>Target 2: Camouflage Tactics</li>
+                            <li>Target 3: Blubber Armor & Survival</li>
+                        </ul>
+                    </div>
+
+                    <div class="chapter-box">
+                        <h3>🎨 File 2: Ancient Relics</h3>
+                        <ul class="lesson-list">
+                            <li>Target 1: The National Museum Search</li>
+                            <li>Target 2: Raw Materials (Silk, Wool)</li>
+                            <li>Target 3: Giant Sculptures & Artifacts</li>
+                        </ul>
+                    </div>
+
+                    <div class="chapter-box">
+                        <h3>🩺 File 3: Medical Rescue</h3>
+                        <ul class="lesson-list">
+                            <li>Target 1: Fact vs Fiction vs Opinion</li>
+                            <li>Target 2: The Edwin Smith Papyrus</li>
+                            <li>Target 3: Medical Tools (Stethoscope, X-Ray)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- THEME 4 -->
+                <div class="theme-section" style="border-color: var(--police-light);">
+                    <div class="theme-header" style="background: var(--police-blue); border-color: var(--police-light);">🚀 OPERATION: Connections (Theme 4)</div>
+                    
+                    <div class="chapter-box">
+                        <h3>🧲 File 4: Magnetic Forces</h3>
+                        <ul class="lesson-list">
+                            <li>Target 1: Push & Pull Maneuvers</li>
+                            <li>Target 2: Magnetic Attraction & Repulsion</li>
+                            <li>Target 3: Solving problems with Magnets</li>
+                        </ul>
+                    </div>
+
+                    <div class="chapter-box">
+                        <h3>🚓 File 5: Logistics & Transport</h3>
+                        <ul class="lesson-list">
+                            <li>Target 1: Technology Evolution</li>
+                            <li>Target 2: Trade & Bartering System</li>
+                            <li>Target 3: Designing Transport Vehicles</li>
+                        </ul>
+                    </div>
+
+                    <div class="chapter-box">
+                        <h3>💻 File 6: Cyber Command</h3>
+                        <ul class="lesson-list">
+                            <li>Target 1: Computer Hardware (CPU, Memory)</li>
+                            <li>Target 2: Input / Output Systems</li>
+                            <li>Target 3: Coding Logic</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. MEDAL GALLERY SCREEN -->
+        <div id="screen-gallery" class="screen">
+            <h2 class="tactical-font" style="text-align: center; color: var(--gold); font-size: 2.2rem; margin-bottom: 10px; text-shadow: 2px 2px 0 #000;">🎖️ COMMANDER'S MEDALS 🎖️</h2>
+            <p style="text-align: center; font-size: 1.1rem; font-weight: bold; color: #bdc3c7; margin-bottom: 25px;">Complete operations to earn your military badges, Captain!</p>
+            
+            <div class="gallery-grid">
+                <div class="gallery-slot" id="gal-0"><div class="lock">🔒</div><div class="emoji">🐻‍❄️</div><div class="title">Camo Badge</div></div>
+                <div class="gallery-slot" id="gal-1"><div class="lock">🔒</div><div class="emoji">🗿</div><div class="title">Relic Badge</div></div>
+                <div class="gallery-slot" id="gal-2"><div class="lock">🔒</div><div class="emoji">📜</div><div class="title">Intel Badge</div></div>
+                <div class="gallery-slot" id="gal-3"><div class="lock">🔒</div><div class="emoji">🩺</div><div class="title">Medic Badge</div></div>
+                <div class="gallery-slot" id="gal-4"><div class="lock">🔒</div><div class="emoji">🧲</div><div class="title">Force Badge</div></div>
+                <div class="gallery-slot" id="gal-5"><div class="lock">🔒</div><div class="emoji">🤝</div><div class="title">Trade Badge</div></div>
+                <div class="gallery-slot" id="gal-6"><div class="lock">🔒</div><div class="emoji">✈️</div><div class="title">Pilot Badge</div></div>
+                <div class="gallery-slot" id="gal-7"><div class="lock">🔒</div><div class="emoji">💻</div><div class="title">Cyber Badge</div></div>
+            </div>
+        </div>
+
+        <!-- 4. GAME SCREEN -->
+        <div id="screen-game" class="screen">
+            <div class="game-header">
+                <button class="btn-read-aloud" onclick="readQuestion()">📻 RADIO</button>
+                <div class="progress-bar-container"><div class="progress-bar-fill" id="game-progress"></div></div>
+                <span class="tactical-font" style="color:var(--gold); font-size:1.2rem;" id="q-counter">1/8</span>
+            </div>
+            
+            <div class="question-box" id="quiz-question">Awaiting Orders...</div>
+            <div class="options-container" id="quiz-options"></div>
+            <div class="feedback-area" id="feedback-area"></div>
+        </div>
+
+        <!-- 5. WIN SCREEN -->
+        <div id="screen-win" class="screen" style="text-align: center; padding-top: 50px;">
+            <h1 class="tactical-font" style="font-size: 3.2rem; color: var(--gold); margin-bottom: 20px; text-shadow: 3px 3px 0 #000; animation: bounceIn 2s infinite;">MISSION ACCOMPLISHED! 🎖️</h1>
+            <p style="font-size: 1.5rem; font-weight: 900; margin-bottom: 30px; color: #ecf0f1;">Outstanding work, Captain Anas! You secured all the badges and protected the base!</p>
+            <button class="menu-btn btn-c3" style="margin: 0 auto;" onclick="nav('gallery')">🫡 View My Medals</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- GAME DATA ---
+        const quizData = [
+            { q: "Target 1 🐾: A polar bear hides in the snow using its white fur. What is this tactical maneuver called?", opts: [{t: "Blubber", e: "❄️", c: false}, {t: "Camouflage", e: "🪖", c: true}, {t: "Radar", e: "📡", c: false}], msg: "Target Secured! Camouflage hides the bear!", sticker: 0 },
+            { q: "Target 2 🗿: Ancient Egyptians built a giant guardian statue with a lion's body and a human's head. Name it!", opts: [{t: "The Sphinx", e: "🗿", c: true}, {t: "Pyramid Base", e: "🔺", c: false}, {t: "Watchtower", e: "🗼", c: false}], msg: "Confirmed! The Sphinx is a massive sculpture!", sticker: 1 },
+            { q: "Target 3 📜: Medical Intel! Ancient Egyptians wrote their medicine secrets on a special paper. Identify it.", opts: [{t: "Plastic", e: "🎒", c: false}, {t: "Papyrus", e: "📜", c: true}, {t: "Metal Plate", e: "🛡️", c: false}], msg: "Intel verified! They used the Edwin Smith Papyrus!", sticker: 2 },
+            { q: "Target 4 🩺: Medic Check! What tool does a doctor use to listen to your heartbeat?", opts: [{t: "Stethoscope", e: "🩺", c: true}, {t: "Thermometer", e: "🌡️", c: false}, {t: "Microscope", e: "🔬", c: false}], msg: "Correct! The Stethoscope checks the heart!", sticker: 3 },
+            { q: "Target 5 🧲: Physics Check! If you bring two 'Like Poles' of a magnet together, what happens?", opts: [{t: "They Attract", e: "🫂", c: false}, {t: "They Repel", e: "🛡️", c: true}, {t: "They Explode", e: "💥", c: false}], msg: "Affirmative! Like poles push away (Repel)!", sticker: 4 },
+            { q: "Target 6 🤝: Logistics Check! Exchanging goods (like chickens for fish) without using money is called?", opts: [{t: "Bartering", e: "🤝", c: true}, {t: "Buying", e: "💵", c: false}, {t: "Stealing", e: "🚨", c: false}], msg: "Smart! Barter is an ancient trade system!", sticker: 5 },
+            { q: "Target 7 ✈️: Fast Transport required! What vehicle travels across oceans the fastest?", opts: [{t: "Armored Truck", e: "🚛", c: false}, {t: "Airplane", e: "✈️", c: true}, {t: "Police Boat", e: "🚤", c: false}], msg: "Zoom! Airplanes are the fastest transport!", sticker: 6 },
+            { q: "Target 8 💻: Cyber Security! What is the 'Brain' of the computer that processes data?", opts: [{t: "The Mouse", e: "🖱️", c: false}, {t: "The CPU", e: "🧠", c: true}, {t: "The Screen", e: "🖥️", c: false}], msg: "Hack successful! The CPU is the central brain!", sticker: 7 }
+        ];
+
+        let currentQ = 0;
+        let isProcessing = false;
+        const unlockedStickers = new Array(8).fill(false);
+
+        // --- NAVIGATION ---
+        function nav(screenId) {
+            stopAudio();
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(`screen-${screenId}`).classList.add('active');
+            if(screenId === 'gallery') updateGallery();
+        }
+
+        // --- AUDIO & TTS ---
+        const synth = window.speechSynthesis || null;
+        const AudioContext = window.AudioContext || window.webkitAudioContext || null;
+        let audioCtx;
+
+        function initAudio() {
+            if (!AudioContext) return;
+            if (!audioCtx) { try { audioCtx = new AudioContext(); } catch(e) {} }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type) {
+            initAudio();
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+                
+                if (type === 'correct') {
+                    // Radio Double Beep
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(800, now);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.setValueAtTime(0, now + 0.1);
+                    osc.frequency.setValueAtTime(1000, now + 0.15);
+                    gain.gain.setValueAtTime(0.2, now + 0.15);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.3);
+                    osc.start(now); osc.stop(now + 0.3);
+                } else if (type === 'wrong') {
+                    // Access Denied Buzz
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.linearRampToValueAtTime(100, now + 0.4);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.4);
+                    osc.start(now); osc.stop(now + 0.4);
+                } else if (type === 'win') {
+                    // Military Trumpet (Reveille style)
+                    [261.63, 329.63, 392.00, 523.25].forEach((freq, i) => {
+                        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+                        o.connect(g); g.connect(audioCtx.destination);
+                        o.type = 'square'; o.frequency.value = freq;
+                        g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(0.2, now + 0.1 + (i*0.15)); g.gain.linearRampToValueAtTime(0, now + 1.5);
+                        o.start(now); o.stop(now + 1.5);
+                    });
+                }
+            } catch(e) {}
+        }
+
+        function readAllContents() {
+            if (!synth) return;
+            stopAudio();
+            document.getElementById('btn-stop-audio').style.display = 'block';
+            
+            let textToRead = "Attention Captain Anas. Mission Objectives. ";
+            textToRead += "Theme 3: Origins. Includes Animal Secrets, Ancient Relics, and Medical Rescue. ";
+            textToRead += "Theme 4: Connections. Includes Magnetic Forces, Logistics and Transport, and Cyber Command. Over and out.";
+            
+            const utterThis = new SpeechSynthesisUtterance(textToRead);
+            utterThis.lang = 'en-US'; utterThis.rate = 0.9; utterThis.pitch = 0.8; // Lower pitch for commander voice
+            utterThis.onend = () => document.getElementById('btn-stop-audio').style.display = 'none';
+            synth.speak(utterThis);
+        }
+
+        function readQuestion() {
+            if (!synth) return;
+            stopAudio();
+            const utterThis = new SpeechSynthesisUtterance(quizData[currentQ].q);
+            utterThis.lang = 'en-US'; utterThis.rate = 0.9; utterThis.pitch = 0.8;
+            synth.speak(utterThis);
+        }
+
+        function speakInstant(text) {
+            if (!synth) return;
+            stopAudio();
+            const utterThis = new SpeechSynthesisUtterance(text);
+            utterThis.lang = 'en-US'; utterThis.rate = 1.0; utterThis.pitch = 0.8;
+            synth.speak(utterThis);
+        }
+
+        function stopAudio() {
+            if (synth) synth.cancel();
+            document.getElementById('btn-stop-audio').style.display = 'none';
+        }
+
+        // --- GAME LOGIC ---
+        function startGame() {
+            initAudio(); stopAudio();
+            currentQ = 0; unlockedStickers.fill(false);
+            updateGallery(); renderQuestion();
+            nav('game');
+            speakInstant("Attention Captain Anas. Deploying to mission area!");
+        }
+
+        function renderQuestion() {
+            if(currentQ >= quizData.length) {
+                document.getElementById('game-progress').style.width = `100%`;
+                setTimeout(() => { nav('win'); playSound('win'); startStars(); speakInstant("Mission accomplished! Excellent work, Captain!"); }, 500);
+                return;
+            }
+
+            isProcessing = false;
+            document.getElementById('game-progress').style.width = `${(currentQ / quizData.length) * 100}%`;
+            document.getElementById('q-counter').innerText = `TARGET ${currentQ + 1}/8`;
+            
+            const qData = quizData[currentQ];
+            document.getElementById('quiz-question').innerText = qData.q;
+            
+            const elFeedback = document.getElementById('feedback-area');
+            elFeedback.className = 'feedback-area'; elFeedback.innerText = '';
+            
+            const elOptions = document.getElementById('quiz-options');
+            elOptions.innerHTML = '';
+            
+            qData.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span>${opt.t}</span> <span style="font-size:1.8rem">${opt.e}</span>`;
+                btn.onclick = () => handleAnswer(opt, btn, qData.sticker);
+                elOptions.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(opt, btn, stickerIdx) {
+            if(isProcessing) return;
+            isProcessing = true;
+            stopAudio();
+
+            const elFeedback = document.getElementById('feedback-area');
+
+            if(opt.c) {
+                btn.classList.add('anim-correct');
+                playSound('correct');
+                speakInstant(quizData[currentQ].msg);
+                
+                elFeedback.innerText = quizData[currentQ].msg;
+                elFeedback.className = 'feedback-area show text-correct';
+                unlockedStickers[stickerIdx] = true;
+                
+                setTimeout(() => { currentQ++; renderQuestion(); }, 2500);
+            } else {
+                btn.classList.add('anim-shake');
+                playSound('wrong');
+                speakInstant("Negative, Captain! Try again.");
+                
+                elFeedback.innerText = "NEGATIVE! TRY AGAIN 🚨";
+                elFeedback.className = 'feedback-area show text-wrong';
+                
+                setTimeout(() => { btn.classList.remove('anim-shake'); isProcessing = false; }, 1000);
+            }
+        }
+
+        // --- GALLERY ---
+        function updateGallery() {
+            unlockedStickers.forEach((isUnlocked, index) => {
+                const slot = document.getElementById(`gal-${index}`);
+                if(slot) { isUnlocked ? slot.classList.add('unlocked') : slot.classList.remove('unlocked'); }
+            });
+        }
+
+        // --- STARS ANIMATION (Military Celebration) ---
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let starsAnim; let particles = [];
+
+        function resize() { if(canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; } }
+        window.addEventListener('resize', resize); resize();
+
+        function startStars() {
+            if(!canvas || !ctx) return;
+            particles = [];
+            for(let i=0; i<100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 5 + 5,
+                    sy: Math.random() * 4 + 2,
+                    rot: Math.random() * 360,
+                    rs: Math.random() * 5
+                });
+            }
+            if(!starsAnim) animateStars();
+        }
+
+        function drawStar(cx, cy, spikes, outerRadius, innerRadius) {
+            let rot = Math.PI / 2 * 3; let x = cx; let y = cy; let step = Math.PI / spikes;
+            ctx.beginPath(); ctx.moveTo(cx, cy - outerRadius);
+            for(let i=0; i<spikes; i++){
+                x = cx + Math.cos(rot) * outerRadius; y = cy + Math.sin(rot) * outerRadius; ctx.lineTo(x,y); rot += step;
+                x = cx + Math.cos(rot) * innerRadius; y = cy + Math.sin(rot) * innerRadius; ctx.lineTo(x,y); rot += step;
+            }
+            ctx.lineTo(cx, cy - outerRadius); ctx.closePath();
+            ctx.lineWidth = 2; ctx.strokeStyle = '#f39c12'; ctx.stroke(); ctx.fillStyle = '#f1c40f'; ctx.fill();
+        }
+
+        function animateStars() {
+            if(!ctx || !canvas) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.y += p.sy; p.rot += p.rs;
+                ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI / 180);
+                drawStar(0, 0, 5, p.size, p.size/2);
+                ctx.restore();
+                if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
+            });
+            starsAnim = requestAnimationFrame(animateStars);
+        }
+        
+        // Initialize default view
+        nav('menu');
+    </script>
 </body>
 </html>
