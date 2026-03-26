@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ قالب التعلم التفاعلي ✨</title>
+    <!-- يمكنك تغيير الخطوط من هنا -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================
+           🎨 CSS CHUNK 1: المتغيرات الأساسية (Variables)
+           ========================================== */
+        :root {
+            --primary: #ff9a9e;
+            --secondary: #fad0c4;
+            --accent: #a18cd1;
+            --text: #2d3436;
+            --card-bg: #ffffff;
+            --bg-gradient: linear-gradient(120deg, #a18cd1 0%, #fbc2eb 100%);
+            --game-card: #f8f9fa;
+            --font-main: 'Cairo', sans-serif;
+        }
+
+        /* ==========================================
+           🎨 CSS CHUNK 2: التنسيقات العامة (Global Styles)
+           ========================================== */
+        body {
+            font-family: var(--font-main);
+            background-image: var(--bg-gradient);
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 10px auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 4px solid #fff;
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            text-shadow: 1px 1px 0px #ffeaa7;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        /* ==========================================
+           🎨 CSS CHUNK 3: شريط التنقل (Navigation)
+           ========================================== */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.8);
+            border: 2px solid #eee;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-family: var(--font-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.4);
+            border-color: var(--primary);
+        }
+
+        /* ==========================================
+           🎨 CSS CHUNK 4: شريط التقدم (Progress & Avatar)
+           ========================================== */
+        .progress-wrapper {
+            position: relative;
+            margin: 40px 0 30px 0;
+        }
+
+        .companion-spot {
+            position: absolute;
+            top: -45px;
+            right: 0; /* Changed to right for RTL */
+            font-size: 2.5rem;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+            animation: float 3s ease-in-out infinite;
+            z-index: 10;
+            transition: right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(5deg); }
+            50% { transform: translateY(-10px) rotate(-5deg); }
+            100% { transform: translateY(0px) rotate(5deg); }
+        }
+
+        .progress-container {
+            background: #dfe6e9;
+            border-radius: 50px;
+            height: 20px;
+            width: 100%;
+            overflow: hidden;
+            border: 2px solid #fff;
+        }
+
+        .progress-bar {
+            background: linear-gradient(to left, var(--primary), #fbc2eb); /* RTL gradient */
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* ==========================================
+           🎨 CSS CHUNK 5: القوائم والبطاقات (Lists & Cards)
+           ========================================== */
+        .checklist { list-style: none; padding: 0; margin: 0; }
+        .item {
+            background: var(--card-bg);
+            margin-bottom: 12px;
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s, background 0.3s;
+            border: 1px solid #f1f2f6;
+        }
+        .item:active { transform: scale(0.98); }
+        .item.completed { background: #f0fff4; border-color: #55efc4; }
+        .item.completed h3 { text-decoration: line-through; color: #00b894; }
+
+        .checkbox-custom {
+            width: 28px; height: 28px; border-radius: 50%;
+            border: 2px solid #dfe6e9; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .item.completed .checkbox-custom { background: #55efc4; border-color: #55efc4; color: white; }
+
+        /* ==========================================
+           🎨 CSS CHUNK 6: اللعبة والمتجر (Game & Shop)
+           ========================================== */
+        .score-board {
+            background: #fff; padding: 8px 20px; border-radius: 20px;
+            color: var(--primary); font-weight: 700;
+            margin-bottom: 20px; border: 2px solid var(--primary); display: inline-block;
+        }
+        .question-card {
+            background: var(--game-card); padding: 25px; border-radius: 20px;
+            margin-bottom: 20px; border: 3px dashed var(--accent);
+            text-align: center;
+        }
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        @media (min-width: 600px) { .options-grid { grid-template-columns: 1fr 1fr; } }
+        .option-btn {
+            background: white; border: 2px solid #dfe6e9; padding: 15px;
+            border-radius: 12px; cursor: pointer; font-weight: 600;
+            font-family: var(--font-main); font-size: 1rem; transition: 0.2s;
+        }
+        .option-btn:hover { border-color: var(--accent); background: #f8f9fa; }
+
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        .shop-item { background: white; padding: 15px; border-radius: 15px; text-align: center; border: 2px solid #eee; }
+        .shop-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
+        .btn-buy, .btn-equip {
+            width: 100%; border: none; padding: 10px; border-radius: 10px; cursor: pointer; 
+            font-family: var(--font-main); font-weight: 600; transition: 0.3s;
+        }
+        .btn-buy { background: var(--primary); color: white; }
+        .btn-buy:disabled { background: #dfe6e9; cursor: not-allowed; }
+        .btn-equip { background: var(--accent); color: white; margin-top: 5px; }
+        .btn-equip.equipped { background: #55efc4; }
+
+        /* ==========================================
+           🎨 CSS CHUNK 7: المراجعة والنوافذ المنبثقة (Misc & Modals)
+           ========================================== */
+        .summary-card { background: #fff; padding: 15px 20px; border-radius: 15px; margin-bottom: 15px; border-right: 8px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .qa-card { background: #fff; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 10px; overflow: hidden; }
+        .qa-header { padding: 15px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
+        .qa-body { max-height: 0; transition: max-height 0.3s ease-out; padding: 0 15px; background: #fff; color: #636e72; }
+        .qa-card.open .qa-body { max-height: 300px; padding: 15px; border-top: 1px solid #eee; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .modal { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: popIn 0.3s ease-out; }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        
+        .btn-action { background: #ff7675; color: white; padding: 10px 25px; border-radius: 50px; border: none; font-family: var(--font-main); font-weight: 600; cursor: pointer; font-size: 1rem; transition: 0.2s; }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+<!-- ==========================================
+     🏗️ HTML CHUNK 1: واجهة المستخدم الأساسية
+     ========================================== -->
+<div class="container">
+    <header>
+        <h1 id="appMainTitle">✨ جاري تحميل التطبيق... ✨</h1>
+        <div class="nav-tabs" id="navTabs">
+            <!-- يتم توليد الأزرار عبر الجافاسكربت لتسهيل التعديل -->
+        </div>
+    </header>
+
+    <!-- 🏗️ HTML CHUNK 2: شاشة المهام (Checklist) -->
+    <div id="checklist-view" class="view-section">
+        <div class="progress-wrapper">
+            <div id="activeCompanion" class="companion-spot">🌟</div>
+            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+        </div>
+        <ul class="checklist" id="checklist"></ul>
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn-action" onclick="confirmReset()">🔄 إعادة ضبط التقدم</button>
+        </div>
+    </div>
+
+    <!-- 🏗️ HTML CHUNK 3: شاشة اللعبة (Game) -->
+    <div id="game-view" class="view-section" style="display:none">
+        <div class="score-board"><span id="currencyIcon1">💎</span> <span id="currencyName1">نقاط</span>: <span id="gameScore">0</span></div>
+        <div class="question-card">
+            <p id="questionText" style="font-weight:bold; font-size: 1.2rem; margin: 0;"></p>
+        </div>
+        <div class="options-grid" id="optionsGrid"></div>
+    </div>
+
+    <!-- 🏗️ HTML CHUNK 4: شاشة المتجر (Shop) -->
+    <div id="shop-view" class="view-section" style="display:none">
+        <div class="score-board"><span id="currencyIcon2">💎</span> <span id="currencyName2">نقاط</span>: <span id="shopScore">0</span></div>
+        <div class="shop-grid" id="shopGrid"></div>
+    </div>
+
+    <!-- 🏗️ HTML CHUNK 5: شاشة الملخص (Summary) -->
+    <div id="summary-view" class="view-section" style="display:none">
+        <div id="summaryContainer"></div>
+    </div>
+
+    <!-- 🏗️ HTML CHUNK 6: شاشة الأسئلة (Q&A) -->
+    <div id="qa-view" class="view-section" style="display:none">
+        <div id="qaContainer"></div>
+    </div>
+</div>
+
+<!-- 🏗️ HTML CHUNK 7: النافذة المنبثقة (Modal) -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div style="font-size: 4rem; margin-bottom: 10px;" id="modalEmoji">🎉</div>
+        <h2 id="modalTitle" style="margin-top: 0;">أحسنت!</h2>
+        <p id="modalText" style="color: #636e72; line-height: 1.5;"></p>
+        <button class="btn-action" onclick="closeModal()" style="background: var(--accent); margin-top: 15px;">متابعة</button>
+    </div>
+</div>
+
+<script>
+    /* =========================================================================
+       🧩 JS CHUNK 1: إعدادات المحتوى (DATA CONFIGURATION)
+       هنا يمكنك تغيير كل محتوى التطبيق بالكامل ليناسب مشروعك!
+       ========================================================================= */
+    const APP_CONFIG = {
+        id: "my_custom_learning_app", // قم بتغييره لكل مشروع لعدم تداخل البيانات
+        title: "✨ رحلة تعلم البرمجة ✨",
+        currencyName: "عملات",
+        currencyIcon: "🪙",
+        defaultAvatar: "🚀",
+        tabs: [
+            { id: 'checklist', label: '📝 الدروس' },
+            { id: 'game', label: '🎮 تدريب' },
+            { id: 'shop', label: '🛍️ المتجر' },
+            { id: 'summary', label: '📚 ملخص' },
+            { id: 'qa', label: '❓ أسئلة' }
+        ]
+    };
+
+    // 1. قائمة الدروس/المهام
+    const CONTENT_TOPICS = [
+        { id: 1, title: "مقدمة في الخوارزميات", desc: "تعلم أساسيات التفكير المنطقي.", fact: "الخوارزمية هي مجرد خطوات لحل مشكلة! 🧠" },
+        { id: 2, title: "المتغيرات وأنواع البيانات", desc: "كيف نخزن المعلومات في الذاكرة.", fact: "المتغير مثل الصندوق الذي يحفظ البيانات! 📦" },
+        { id: 3, title: "الجمل الشرطية (If/Else)", desc: "اتخاذ القرارات في الكود.", fact: "الحاسوب يتخذ قرارات بناءً على الشروط! 🔀" },
+        { id: 4, title: "الحلقات التكرارية (Loops)", desc: "تنفيذ الأوامر عدة مرات.", fact: "التكرار يوفر عليك كتابة نفس الكود مئات المرات! 🔄" }
+    ];
+
+    // 2. أسئلة اللعبة
+    const QUIZ_DATA = [
+        { q: "ما هو المتغير (Variable)؟", a: "مكان لتخزين البيانات", options: ["مكان لتخزين البيانات", "شاشة العرض", "لوحة المفاتيح", "نوع من الفيروسات"] },
+        { q: "أي من التالي يستخدم لاتخاذ قرار في الكود؟", a: "If/Else", options: ["If/Else", "For loop", "Console.log", "Variable"] },
+        { q: "ما هي فائدة الحلقات التكرارية؟", a: "تكرار تنفيذ الكود", options: ["تكرار تنفيذ الكود", "حذف البيانات", "إغلاق البرنامج", "تلوين الشاشة"] }
+    ];
+
+    // 3. عناصر المتجر (المكافآت)
+    const SHOP_ITEMS = [
+        { icon: '👨‍💻', name: 'المبرمج المبتدئ', cost: 10 },
+        { icon: '🧙‍♂️', name: 'ساحر الأكواد', cost: 25 },
+        { icon: '🤖', name: 'الروبوت الذكي', cost: 50 },
+        { icon: '👑', name: 'ملك البرمجة', cost: 100 }
+    ];
+
+    // 4. الأسئلة الشائعة
+    const QA_ITEMS = [
+        { q: "لماذا نتعلم البرمجة؟", a: "لأنها لغة العصر وتساعدنا على حل المشكلات وبناء أدوات تفيد البشرية." },
+        { q: "هل أحتاج إلى رياضيات معقدة للبدء؟", a: "لا، الأساسيات تكفي للبدء، التفكير المنطقي هو الأهم!" }
+    ];
+
+    /* =========================================================================
+       ⚙️ JS CHUNK 2: إدارة الحالة (STATE MANAGEMENT)
+       ========================================================================= */
+    let state = JSON.parse(localStorage.getItem(`app_state_${APP_CONFIG.id}`)) || {
+        completed: [],
+        currency: 0,
+        unlocked: [APP_CONFIG.defaultAvatar],
+        equipped: APP_CONFIG.defaultAvatar
+    };
+
+    function saveState() {
+        localStorage.setItem(`app_state_${APP_CONFIG.id}`, JSON.stringify(state));
+        updateUI();
+    }
+
+    /* =========================================================================
+       🖥️ JS CHUNK 3: المنطق البرمجي لواجهة المستخدم (UI RENDERING & LOGIC)
+       ========================================================================= */
+    function initApp() {
+        // إعداد النصوص الأساسية
+        document.getElementById('appMainTitle').innerText = APP_CONFIG.title;
+        document.getElementById('currencyName1').innerText = APP_CONFIG.currencyName;
+        document.getElementById('currencyName2').innerText = APP_CONFIG.currencyName;
+        document.getElementById('currencyIcon1').innerText = APP_CONFIG.currencyIcon;
+        document.getElementById('currencyIcon2').innerText = APP_CONFIG.currencyIcon;
+
+        // توليد أزرار التنقل
+        const navContainer = document.getElementById('navTabs');
+        navContainer.innerHTML = APP_CONFIG.tabs.map((tab, index) => `
+            <button class="nav-btn ${index === 0 ? 'active' : ''}" onclick="switchTab('${tab.id}')">
+                ${tab.label}
+            </button>
+        `).join('');
+
+        updateUI();
+    }
+
+    function updateUI() {
+        // تحديث شريط التقدم والمجسم (Avatar)
+        const percent = (state.completed.length / CONTENT_TOPICS.length) * 100;
+        document.getElementById('progressBar').style.width = percent + '%';
+        // تعديل موضع المجسم للغة العربية (Right-to-Left)
+        document.getElementById('activeCompanion').style.right = `calc(${percent}% - 20px)`;
+        document.getElementById('activeCompanion').innerText = state.equipped;
+
+        // تحديث النقاط (العملات)
+        document.getElementById('gameScore').innerText = state.currency;
+        document.getElementById('shopScore').innerText = state.currency;
+
+        renderChecklist();
+        renderShop();
+    }
+
+    function switchTab(viewId) {
+        // إخفاء كل الشاشات
+        document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
+        // إظهار الشاشة المطلوبة
+        document.getElementById(viewId + '-view').style.display = 'block';
+        
+        // تحديث حالة الأزرار
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('onclick').includes(viewId));
+        });
+
+        // تشغيل دوال خاصة بالشاشات عند فتحها
+        if(viewId === 'game') nextQuestion();
+        if(viewId === 'summary') renderSummary();
+        if(viewId === 'qa') renderQA();
+    }
+
+    /* --- دوال شاشة المهام (Checklist) --- */
+    function renderChecklist() {
+        const list = document.getElementById('checklist');
+        list.innerHTML = CONTENT_TOPICS.map(t => `
+            <li class="item ${state.completed.includes(t.id) ? 'completed' : ''}" onclick="toggleTask(${t.id}, '${t.fact}')">
+                <div class="checkbox-custom">${state.completed.includes(t.id) ? '✓' : ''}</div>
+                <div>
+                    <h3 style="margin:0; font-size:1.1rem">${t.title}</h3>
+                    <p style="margin:5px 0 0 0; font-size:0.85rem; color:#777">${t.desc}</p>
+                </div>
+            </li>
+        `).join('');
+    }
+
+    function toggleTask(id, fact) {
+        if (!state.completed.includes(id)) {
+            state.completed.push(id);
+            state.currency += 5; // مكافأة إكمال المهمة
+            openModal("تم إنجاز المهمة!", fact, "✨");
+        } else {
+            state.completed = state.completed.filter(i => i !== id);
+        }
+        saveState();
+    }
+
+    /* --- دوال شاشة اللعبة (Quiz Game) --- */
+    function nextQuestion() {
+        const q = QUIZ_DATA[Math.floor(Math.random() * QUIZ_DATA.length)];
+        document.getElementById('questionText').innerText = q.q;
+        const grid = document.getElementById('optionsGrid');
+        
+        // ترتيب عشوائي للخيارات
+        const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+        
+        grid.innerHTML = shuffledOptions.map(opt => `
+            <button class="option-btn" onclick="checkAnswer('${opt}', '${q.a}')">${opt}</button>
+        `).join('');
+    }
+
+    function checkAnswer(chosen, correct) {
+        if (chosen === correct) {
+            state.currency += 2; // مكافأة الإجابة الصحيحة
+            openModal("إجابة صحيحة!", `لقد كسبت 2 ${APP_CONFIG.currencyName}! أحسنت.`, APP_CONFIG.currencyIcon);
+        } else {
+            openModal("حاول مرة أخرى!", `الإجابة الصحيحة كانت: ${correct}`, "💡");
+        }
+        saveState();
+        nextQuestion();
+    }
+
+    /* --- دوال المتجر (Shop) --- */
+    function renderShop() {
+        const grid = document.getElementById('shopGrid');
+        grid.innerHTML = SHOP_ITEMS.map(item => {
+            const isUnlocked = state.unlocked.includes(item.icon);
+            return `
+                <div class="shop-item">
+                    <span class="shop-icon">${item.icon}</span>
+                    <p style="font-weight:700; font-size:0.9rem; margin-bottom: 10px;">${item.name}</p>
+                    ${isUnlocked ? 
+                        `<button class="btn-equip ${state.equipped === item.icon ? 'equipped' : ''}" 
+                                 onclick="equipAvatar('${item.icon}')">
+                                 ${state.equipped === item.icon ? 'مُستخدم حالياً ✓' : 'استخدام'}
+                         </button>` :
+                        `<button class="btn-buy" onclick="buyAvatar('${item.icon}', ${item.cost})" ${state.currency < item.cost ? 'disabled' : ''}>
+                            ${APP_CONFIG.currencyIcon} ${item.cost}
+                        </button>`
+                    }
+                </div>
+            `;
+        }).join('');
+    }
+
+    function buyAvatar(icon, cost) {
+        if (state.currency >= cost) {
+            state.currency -= cost;
+            state.unlocked.push(icon);
+            saveState();
+        }
+    }
+
+    function equipAvatar(icon) {
+        state.equipped = icon;
+        saveState();
+    }
+
+    /* --- دوال الملخص والأسئلة (Summary & QA) --- */
+    function renderSummary() {
+        const cont = document.getElementById('summaryContainer');
+        cont.innerHTML = CONTENT_TOPICS.map(t => `
+            <div class="summary-card">
+                <h3 style="margin-top:0; color: var(--text);">${t.title}</h3>
+                <p style="color: #636e72;">${t.desc}</p>
+                <i style="color:var(--accent); font-size:0.85rem; font-weight: 600;">💡 تذكر: ${t.fact}</i>
+            </div>
+        `).join('');
+    }
+
+    function renderQA() {
+        const cont = document.getElementById('qaContainer');
+        cont.innerHTML = QA_ITEMS.map((item, idx) => `
+            <div class="qa-card" id="qa-${idx}">
+                <div class="qa-header" onclick="document.getElementById('qa-${idx}').classList.toggle('open')">
+                    ${item.q} <span style="color: var(--primary);">▼</span>
+                </div>
+                <div class="qa-body"><p>${item.a}</p></div>
+            </div>
+        `).join('');
+    }
+
+    /* --- دوال النظام (System Utils) --- */
+    function openModal(title, text, emoji) {
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalText').innerText = text;
+        document.getElementById('modalEmoji').innerText = emoji;
+        document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+    function confirmReset() {
+        if(confirm("هل أنت متأكد؟ سيتم مسح كل تقدمك والعودة للبداية!")) {
+            state = { 
+                completed: [], 
+                currency: 0, 
+                unlocked: [APP_CONFIG.defaultAvatar], 
+                equipped: APP_CONFIG.defaultAvatar 
+            };
+            saveState();
+        }
+    }
+
+    // تشغيل التطبيق عند التحميل
+    initApp();
+</script>
+</body>
+</html>
